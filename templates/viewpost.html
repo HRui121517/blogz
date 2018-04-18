@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %} 
+    <a href="/blog">Main Blog Page</a>
+    <a href="/newpost">Add a Blog Entry</a>
+
+    <h1>BLOG!</h1>
+    <br>
+    <div class='posts'>
+        <div class='blogtitle'>{{post.title}}</div>
+        <div class='blogcontent'>{{post.content}}</div>
+    </div>
+    
+{% endblock %}
