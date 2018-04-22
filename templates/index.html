@@ -3,5 +3,21 @@
 {% block content %}
     <h1>Homepage!</h1>
     <a href="/blog">Main Blog Page</a>
+    <br>
     <a href="/newpost">Add a Blog Entry</a>
+    <br>
+    <a href="/signup">Sign Up</a>
+    <br>
+    <a href="/login">Login</a>
+    <br>
+
+    {% if userlist|length == 0 %}
+        <p>No one is registered yet :(</p>
+    {% else %} 
+        {% for user in userlist %}
+            <h2>
+                <a href="/blog?uesr={{user.id}}">{{user.username}}</a>
+            </h2>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

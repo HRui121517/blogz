@@ -42,7 +42,6 @@ def valid_post(title, content):
 
 def valid_username(username):
     while not re.match("^[A-Za-z0-9]+$", username):
-        username_error = 'Username error!'
         return False
     else:
         return True
@@ -55,7 +54,6 @@ def valid_password(password):
 
 def valid_passwordconf(password, passwordconf):
     if password != passwordconf:
-        passwordconf_error = 'Password and password confirmation do not match!'
         return False
     elif len(password)==0 or len(passwordconf)==0:
         return False
@@ -63,6 +61,11 @@ def valid_passwordconf(password, passwordconf):
         return True
 
 posts = []
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup', 'blog', 'home']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
 
 @app.route('/newpost', methods = ['GET', 'POST'])
 def newpost():
@@ -93,13 +96,18 @@ def newpost():
 @app.route('/blog', methods=['GET', 'POST'])
 def blog():
     post_value = request.args.get('id')
-    if post_value:
-        post = Blog.query.get(post_value)
-        return render_template('viewpost.html', title= "BLOG!", post  = post)
-
+    user_value = request.args.get('user')
+    post = Blog.query.filter_by(id=post_value).first()
+    user = Blog.query.filter_by(id=user_value).all()
+    #handle case when request is a specific post
+    if post:
+        return render_template('viewpost.html', title= "BLOG!", post  = post, blog = blog)
+    #handle case when request is a specific user
+    elif user:
+        return render_template('viewuser.html', title= "BLOG!", posts = posts, user = user)
+    #handle case when all are requested
     else:
-        posts = Blog.query.all()
-        return render_template('posts.html', title= "BLOG!", posts = posts)
+        return render_template('posts.html', title = "BLOG", blog = blog)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -151,9 +159,10 @@ def signup():
     
     return render_template("signup.html", title="Register!", username="")
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
-    return redirect('/blog')
+    userlist = User.query.all()
+    return render_template('index.html', title = "Users!", userlist = userlist)
 
 @app.route('/logout', methods=['POST'])
 def logout():

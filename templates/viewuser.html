@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %} 
+    <a href="/blog">Main Blog Page</a>
+    <a href="/newpost">Add a Blog Entry</a>
+
+    <h1>View User Posts!</h1>
+    <br>
+    {% if blogs|length == 0 %}
+        <p>This user haven't post anything yet!</p>
+        {% else %}
+            {% for post in posts %}
+                <a href="/blog?id={{post.id}}">{{post.title}}</a>
+                <br>
+                <div class='blogcontent'>{{post.content}}</div>
+                <div class='userinfo'>
+                    <p>Posted by </p>
+                    <a href="/blog?user={{blog.user.id}}">{{blog.user.username}}</a>
+                </div>
+                <hr>
+            {% endfor %} 
+    
+{% endblock %}

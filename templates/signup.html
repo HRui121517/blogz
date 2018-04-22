@@ -2,17 +2,19 @@
 
 {% block content %}
     <h1>Sign Up!</h1>
+
+    <p>Already have an account? sign in <a href="/login">here</a>! </p>
     <form method='POST'>
         Username:
-        <input type="text" name='username'>
+        <input type="text" id='username' name='username' value ="{{username}}">
         <p class="error">{{username_error}}</p>
         <br>
         Password:
-        <input type="password" name='password'>
+        <input type="password" id='password' name='password'>
         <p class="error">{{password_error}}</p> 
         <br>
         Confirm Password:
-        <input type="password" name='password_conf'>
+        <input type="password" id='password_conf' name='password_conf'>
         <p class="error">{{password_conf_error}}</p>
         <br>
         <input type="submit" value='Sign Up' />
