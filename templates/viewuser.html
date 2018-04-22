@@ -6,7 +6,7 @@
 
     <h1>View User Posts!</h1>
     <br>
-    {% if blogs|length == 0 %}
+    {% if posts|length == 0 %}
         <p>This user haven't post anything yet!</p>
         {% else %}
             {% for post in posts %}
@@ -15,9 +15,10 @@
                 <div class='blogcontent'>{{post.content}}</div>
                 <div class='userinfo'>
                     <p>Posted by </p>
-                    <a href="/blog?user={{blog.user.id}}">{{blog.user.username}}</a>
+                    <a href="/blog?user={{post.user.id}}">{{post.user.username}}</a>
                 </div>
                 <hr>
-            {% endfor %} 
+            {% endfor %}
+    {% endif %}
     
 {% endblock %}

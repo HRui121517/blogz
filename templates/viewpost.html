@@ -4,13 +4,13 @@
     <a href="/blog">Main Blog Page</a>
     <a href="/newpost">Add a Blog Entry</a>
 
-    <h1>BLOG!</h1>
+    <h1>View Single Post!</h1>
     <br>
     <div class='posts'>
-        <div class='blogtitle'>{{blog.title}}</div>
-        <div class='blogcontent'>{{blog.content}}</div>
+        <div class='blogtitle'>{{post.title}}</div>
+        <div class='blogcontent'>{{post.content}}</div>
         <div class='userinfo'>
-            <p>Posted by </p><a href="/blog?user={{blog.user.id}}">{{blog.user.username}}</a>
+            <p>Posted by </p><a href="/blog?user={{post.user.id}}">{{post.user.username}}</a>
         </div>
     </div>
     

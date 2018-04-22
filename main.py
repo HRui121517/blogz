@@ -15,8 +15,7 @@ class Blog(db.Model):
     title = db.Column(db.String(120), nullable = False)
     content = db.Column(db.Text, nullable = False)
     deleted = db.Column(db.Boolean)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable = False)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
     def __init__(self, title, content, user):
         self.title = title
@@ -62,6 +61,7 @@ def valid_passwordconf(password, passwordconf):
         return True
 
 posts = []
+
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'signup', 'blog', 'home']
@@ -100,16 +100,18 @@ def blog():
     post_value = request.args.get('id')
     user_value = request.args.get('user')
     post = Blog.query.filter_by(id=post_value).first()
-    user = Blog.query.filter_by(id=user_value).all()
+    user = User.query.filter_by(id=user_value).first()
     #handle case when request is a specific post
     if post:
-        return render_template('viewpost.html', blog = post)
+        return render_template('viewpost.html', title="POST!", post = post)
     #handle case when request is a specific user
     elif user:
-        return render_template('viewuser.html', title= "BLOG!", posts = posts, user = user)
+        post = Blog.query.filter_by(user_id = user_value).all()
+        return render_template('viewuser.html', title= "USER!", user = user, posts = post)
     #handle case when all are requested
     else:
-        return render_template('posts.html', title = "BLOG", blog = blog)
+        posts = Blog.query.filter_by(deleted=False).all()
+        return render_template('posts.html', title = "ALL POSTS!", posts = posts)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
