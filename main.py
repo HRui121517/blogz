@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import re
@@ -8,6 +8,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:ruihuangblogz@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = 'super secret key'
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,7 +78,8 @@ def newpost():
         content_error = ''
 
         if valid_post(title, content) is True:
-            new_post= Blog(title, content)
+            user = User.query.filter_by(username=session['username']).first()
+            new_post= Blog(title, content, user)
             db.session.add(new_post)
             db.session.commit()
             post_url = "/blog?id=" + str(new_post.id)
@@ -101,7 +103,7 @@ def blog():
     user = Blog.query.filter_by(id=user_value).all()
     #handle case when request is a specific post
     if post:
-        return render_template('viewpost.html', title= "BLOG!", post  = post, blog = blog)
+        return render_template('viewpost.html', blog = post)
     #handle case when request is a specific user
     elif user:
         return render_template('viewuser.html', title= "BLOG!", posts = posts, user = user)
@@ -140,6 +142,7 @@ def signup():
         username_error = ' '
         password_error = ' '
         passwordconf_error = ' '
+        registered_user = User.query.filter_by(username=username)
 
         if valid_username(username) and valid_password(password) and valid_passwordconf(password, passwordconf):
             new_user = User(username, password)
@@ -149,6 +152,8 @@ def signup():
             return redirect('/newpost')
             
         else:
+            if registered_user:
+                username_error = 'Username taken!'
             if valid_username(username)==False:
                 username_error='Invalid username!'
             if valid_password(password)==False:
