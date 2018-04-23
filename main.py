@@ -119,22 +119,21 @@ def login():
         username=request.form['username']
         password=request.form['password']
         user = User.query.filter_by(username=username).first()
-        
         username_error = ' '
         password_error = ' '
-
-        
-        if user.username == username and user.password==password :
+    
+        if user is None:
+            username_error='User Does Not Exist!'
+            return render_template('login.html', title="This user doesn't exsist!", username_error=username_error)
+        elif user.password != password:
+            password_error='Incorrect Password!'
+            return render_template('login.html', title = "Wrong Password!", password_error=password_error)
+        elif user.username == username and user.password==password:
+            session['username'] = username
             return redirect("/newpost")
-        else:
-            if not user:
-                username_error='User Does Not Exist!'
-            if user.password != password:
-                password_error='Incorrect Password!'
-            return render_template('login.html', username_error=username_error, password_error=password_error)
-
-    return render_template("login.html", title="Log In")
-
+    else:
+        return render_template('login.html', title="Log In")
+    
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -144,26 +143,38 @@ def signup():
         username_error = ' '
         password_error = ' '
         passwordconf_error = ' '
-        registered_user = User.query.filter_by(username=username)
+        registered_user = User.query.filter_by(username=username).first()
 
-        if valid_username(username) and valid_password(password) and valid_passwordconf(password, passwordconf):
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            return redirect('/newpost')
-            
-        else:
-            if registered_user:
-                username_error = 'Username taken!'
-            if valid_username(username)==False:
-                username_error='Invalid username!'
+        if registered_user:
+            username_error = 'Username taken!'
             if valid_password(password)==False:
                 password_error='Invalid password!'
             if valid_passwordconf(password, passwordconf)==False:
                 passwordconf_error='Password do not match!'
             return render_template('signup.html', username_error=username_error, password_error=password_error, passwordconf_error=passwordconf_error)
-    
+        
+        elif valid_username(username)==False:
+            username_error='Invalid username!'
+            if valid_password(password)==False:
+                password_error='Invalid password!'
+            if valid_passwordconf(password, passwordconf)==False:
+                passwordconf_error='Password do not match!'
+            return render_template('signup.html', username_error=username_error, password_error=password_error, passwordconf_error=passwordconf_error)
+        
+        elif valid_username(username):
+            if valid_password(password)==False:
+                password_error='Invalid password!'
+            if valid_passwordconf(password, passwordconf)==False:
+                passwordconf_error='Password do not match!'
+            return render_template('signup.html', password_error=password_error, passwordconf_error=passwordconf_error)
+        
+        elif valid_username(username) and valid_password(password) and valid_passwordconf(password, passwordconf):
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            return redirect('/newpost')
+
     return render_template("signup.html", title="Register!", username="")
 
 @app.route('/', methods=['GET'])

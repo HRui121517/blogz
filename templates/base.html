@@ -4,7 +4,18 @@
         <title>{{title}}</title>
     </head>
 <body>
-
+    <header>
+        {% if 'username' in session %}
+        <a href="/">Home</a> | <a href="/blog">Blog posts</a> 
+        <div style='float: right'>
+            {{ session['username'] }}
+            <form action="/logout" method="post" id='logout'>
+                <input type="submit" value="Log Out" />
+            </form>
+        {% else %}
+        <a href="/">Home</a> | <a href="/blog">Blog posts</a> | <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
+        {% endif %}
+    </header>
     {% block content %}
     {% endblock %}
 
